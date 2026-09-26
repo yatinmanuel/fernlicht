@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/fernlicht"]
+members = ["crates/fernlicht", "crates/fernlicht-cli"]
 resolver = "2"
 
 [workspace.package]
