@@ -3,6 +3,8 @@
 pub mod bmw;
 pub mod bytes;
 mod error;
+#[cfg(feature = "serde")]
+mod time;
 pub mod transport;
 pub mod uds;
 

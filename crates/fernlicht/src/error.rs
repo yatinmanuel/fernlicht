@@ -1,5 +1,6 @@
 use std::{fmt, io};
 
+use crate::bytes::Hex;
 use crate::transport::Framing;
 use crate::uds::Nrc;
 
@@ -39,6 +40,11 @@ pub enum Error {
         ecu: u16,
         nrc: Nrc,
     },
+    /// Stopped by [`Guard`](crate::bmw::Guard): not a read and not a known light command.
+    Blocked {
+        ecu: u16,
+        request: Vec<u8>,
+    },
     InvalidHex(String),
 }
 
@@ -70,6 +76,10 @@ impl fmt::Display for Error {
                 write!(f, "ecu {ecu:#04x} timed out on this request earlier, reconnect before retrying")
             }
             Error::Negative { ecu, nrc } => write!(f, "ecu {ecu:#04x}: {nrc}"),
+            Error::Blocked { ecu, request } => {
+                let head = &request[..request.len().min(4)];
+                write!(f, "blocked: {} to {ecu:#04x} is not a known light command", Hex(head))
+            }
             Error::InvalidHex(input) => write!(f, "not hex: {input:?}"),
         }
     }
