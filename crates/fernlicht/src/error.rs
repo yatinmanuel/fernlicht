@@ -45,7 +45,15 @@ pub enum Error {
         ecu: u16,
         request: Vec<u8>,
     },
+    /// A show needs a module the car does not have.
+    MissingModule {
+        show: String,
+        module: &'static str,
+    },
+    InvalidShow(String),
     InvalidHex(String),
+    /// A show ended but the lamps could not be handed back to the car.
+    NotRestored(Box<Error>),
 }
 
 impl Error {
@@ -80,7 +88,10 @@ impl fmt::Display for Error {
                 let head = &request[..request.len().min(4)];
                 write!(f, "blocked: {} to {ecu:#04x} is not a known light command", Hex(head))
             }
+            Error::MissingModule { show, module } => write!(f, "{show} needs {module}"),
+            Error::InvalidShow(reason) => write!(f, "invalid show: {reason}"),
             Error::InvalidHex(input) => write!(f, "not hex: {input:?}"),
+            Error::NotRestored(err) => write!(f, "lamps may not be restored: {err}"),
         }
     }
 }
@@ -89,6 +100,7 @@ impl std::error::Error for Error {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             Error::Io(err) => Some(err),
+            Error::NotRestored(err) => Some(err.as_ref()),
             _ => None,
         }
     }
