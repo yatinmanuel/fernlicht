@@ -1,0 +1,44 @@
+name: Car report
+description: Share what `fernlicht scan` found on your car.
+title: "car: <chassis> <model> <year>"
+labels: [car-report]
+body:
+  - type: input
+    id: car
+    attributes:
+      label: Car
+      description: Chassis code, model, year, and whether it is an LCI.
+      placeholder: F30 330i 2016 LCI
+    validations:
+      required: true
+  - type: dropdown
+    id: headlights
+    attributes:
+      label: Headlights
+      options: [Halogen, Xenon, LED, Adaptive LED, Laser, Not sure]
+    validations:
+      required: true
+  - type: input
+    id: adapter
+    attributes:
+      label: Cable or adapter
+      placeholder: ENET cable, ENET Wi-Fi adapter, …
+  - type: textarea
+    id: report
+    attributes:
+      label: Report
+      description: Paste the JSON file written by `fernlicht scan`. The VIN serial is masked unless you used --keep-vin.
+      render: json
+    validations:
+      required: true
+  - type: dropdown
+    id: tried
+    attributes:
+      label: Did you try a show or lamp command?
+      description: Only if the scan said "yes" for fem or fle shows.
+      options: ["No, scan only", "Yes, it worked", "Yes, it did not work"]
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: What lit up, what did not, and any errors (--trace output helps).
