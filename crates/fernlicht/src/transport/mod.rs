@@ -1,16 +1,18 @@
 //! Getting UDS requests to a module and the replies back.
 //!
-//! [`Framing`] knows the two wire formats and [`Client`] runs requests over
-//! any [`Transport`].
+//! [`Framing`] knows the two wire formats, [`Client`] runs requests over any
+//! [`Transport`], and [`connect`] opens a TCP connection to the gateway.
 
 mod client;
 mod framing;
+mod tcp;
 
 use std::io;
 use std::time::Duration;
 
 pub use client::{Client, ClientOptions, Direction, Tracer};
 pub use framing::{Framing, Incoming, doip_identification_request};
+pub use tcp::{DEFAULT_ORDER, connect, connect_port, discover};
 
 use crate::uds::Reply;
 use crate::{Error, Result};
@@ -18,7 +20,8 @@ use crate::{Error, Result};
 /// Default timeout of [`UdsLink::send`].
 pub const SEND_TIMEOUT: Duration = Duration::from_millis(900);
 
-/// A byte stream to the gateway.
+/// A byte stream to the gateway. Implemented for [`std::net::TcpStream`];
+/// implement it to run the client over anything else.
 pub trait Transport: Send {
     fn send(&mut self, bytes: &[u8]) -> io::Result<()>;
 

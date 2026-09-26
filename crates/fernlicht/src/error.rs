@@ -1,5 +1,6 @@
 use std::{fmt, io};
 
+use crate::transport::Framing;
 use crate::uds::Nrc;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -9,6 +10,11 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 pub enum Error {
     /// The socket failed.
     Io(io::Error),
+    /// No framing got a connection to the gateway. One entry per attempt.
+    Unreachable {
+        host: String,
+        attempts: Vec<(Framing, Error)>,
+    },
     /// The DoIP gateway did not answer the routing activation in time.
     ActivationTimeout,
     /// The connection was closed, by the caller or after a fatal error.
@@ -47,6 +53,14 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Error::Io(err) => err.fmt(f),
+            Error::Unreachable { host, attempts } => {
+                write!(f, "no answer from {host}")?;
+                for (i, (framing, err)) in attempts.iter().enumerate() {
+                    let sep = if i == 0 { " (" } else { ", " };
+                    write!(f, "{sep}{framing}: {err}")?;
+                }
+                if attempts.is_empty() { Ok(()) } else { f.write_str(")") }
+            }
             Error::ActivationTimeout => f.write_str("gateway did not activate routing in time"),
             Error::Closed => f.write_str("connection closed"),
             Error::Refused(reason) | Error::Protocol(reason) => f.write_str(reason),
