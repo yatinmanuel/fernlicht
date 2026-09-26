@@ -39,6 +39,15 @@ fn nibble(digit: u8) -> u8 {
     }
 }
 
+pub(crate) fn be_u16(bytes: &[u8], at: usize) -> Option<u16> {
+    Some(u16::from_be_bytes([*bytes.get(at)?, *bytes.get(at + 1)?]))
+}
+
+pub(crate) fn be_u32(bytes: &[u8], at: usize) -> Option<u32> {
+    let chunk = bytes.get(at..at + 4)?;
+    Some(u32::from_be_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -61,5 +70,12 @@ mod tests {
         for bad in ["", "2", "zz", "22 f", "22 +1"] {
             assert!(parse_hex(bad).is_err(), "{bad:?}");
         }
+    }
+
+    #[test]
+    fn reads_big_endian() {
+        assert_eq!(be_u16(&[0xd5, 0x42], 0), Some(0xd542));
+        assert_eq!(be_u16(&[0xd5], 0), None);
+        assert_eq!(be_u32(&[0, 0, 1, 2], 0), Some(0x0102));
     }
 }

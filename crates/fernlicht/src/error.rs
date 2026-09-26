@@ -7,6 +7,10 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 pub enum Error {
     /// The socket failed.
     Io(io::Error),
+    /// The gateway rejected a message: unknown address, NACK, refused activation.
+    Refused(String),
+    /// Bytes on the wire that do not form a valid frame.
+    Protocol(String),
     InvalidHex(String),
 }
 
@@ -14,6 +18,7 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Error::Io(err) => err.fmt(f),
+            Error::Refused(reason) | Error::Protocol(reason) => f.write_str(reason),
             Error::InvalidHex(input) => write!(f, "not hex: {input:?}"),
         }
     }
