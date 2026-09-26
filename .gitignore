@@ -1,0 +1,10 @@
+/target
+
+# Scan reports carry the VIN.
+fernlicht-report-*.json
+
+# BMW's ECU description files are not ours to redistribute.
+*.prg
+*.PRG
+*.grp
+*.GRP

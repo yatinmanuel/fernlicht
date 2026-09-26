@@ -1,0 +1,27 @@
+[package]
+name = "fernlicht"
+description = "Drive the exterior lights of a BMW over ENET: HSFZ/DoIP transport, UDS, and a light show player"
+keywords = ["bmw", "enet", "doip", "uds", "automotive"]
+categories = ["network-programming", "hardware-support"]
+readme = "../../README.md"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[features]
+serde = ["dep:serde"]
+
+[dependencies]
+serde = { workspace = true, optional = true }
+
+[dev-dependencies]
+serde_json.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+
+[lints]
+workspace = true
