@@ -160,3 +160,10 @@ cargo xtask logo                        # redraw the logo from brand/*.txt
 ```
 
 [PROTOCOL.md](PROTOCOL.md) documents the bytes on the wire.
+
+## Credits
+
+fernlicht is a Rust rebuild of [svietlik](https://github.com/egzey0/svietlik)
+by [Egzey](https://github.com/egzey0), whose TypeScript library worked out the
+HSFZ/DoIP transport, the FEM, FLE and REM light commands and the show engine
+this project builds on.
